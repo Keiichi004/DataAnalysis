@@ -1,0 +1,39 @@
+%pip install openpyxl
+
+import requests
+
+# 데이터 수집 url 및 api key 설정
+url = 'https://apis.data.go.kr/B552845/perDay/price'
+api_key = input('API 인증키를 입력하세요: ')
+
+# 배추 품종 코드
+varieties = {
+    '01': '봄배추',
+    '02': '여름배추(고랭지)',
+    '03': '가을배추',
+    '06': '월동배추'
+}
+
+# 데이터 수집
+for year in range(2015, 2025):
+    for code, name in varieties.items():
+        params = {
+            'serviceKey': api_key,
+            'returnType': 'JSON',
+            'pageNo': '1',
+            'numOfRows': '200',
+            'cond[exmn_ymd::GTE]': str(year) + '0101',
+            'cond[exmn_ymd::LTE]': str(year) + '1231',
+            'cond[se_cd::EQ]': '02',
+            'cond[ctgry_cd::EQ]': '200',
+            'cond[item_cd::EQ]': '211',
+            'cond[grd_cd::EQ]': '04',
+            'cond[sgg_cd::EQ]': '1101',
+            'cond[mrkt_cd::EQ]': '0110211',
+            'cond[vrty_cd::EQ]': code
+        }
+
+        response = requests.get(url, params=params)
+
+        print(year, name)
+        print(response.json())
